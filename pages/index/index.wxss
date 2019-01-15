@@ -1,0 +1,46 @@
+/**index.wxss**/
+.header {
+  height: 100rpx;
+  border-bottom: 1rpx solid #efefef;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.left {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.userinfo {
+  width: 100rpx;
+  display: inline-block;
+}
+
+.userinfo .img {
+  display: inline-block;
+  line-height: 100rpx;
+  width: 70rpx;
+  height: 70rpx;
+  box-sizing: border-box;
+  border-radius: 50rpx;
+  margin: 15rpx;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+.order {
+  display: inline-block;
+  line-height: 100rpx;
+  vertical-align: bottom;
+  font-size: 32rpx;
+}
+
+.center {
+  text-align: center;
+  line-height: 100rpx;
+}
+
+.userinfo button {
+  width: 100%;
+  height: 100%;
+  font-size: 20rpx;
+}
