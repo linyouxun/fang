@@ -11,16 +11,137 @@
   <view class='center'>城市</view>
 </view>
 
-<view>
 <map
+  style="width: 100%; height: {{windowHeight - 100 - (more ? 10 : 5) * 80}}rpx;"
   id="map"
-  longitude="113.324520"
-  latitude="23.099994"
+  latitude='{{latitude}}'
+  longitude='{{longitude}}'
   scale="14"
   controls="{{controls}}"
+  markers="{{markers}}"
+  bindmarkertap="markertap"
   bindcontroltap="controltap"
+  bindtap='bindtap'
   bindregionchange="regionchange"
-  show-location
-  style="width: 100%; height: 300px;"
+  show-location="{{true}}"
+  enable-zoom="{{false}}"
 ></map>
-</view>
+  <view class='bottom' style='bottom: -{{(!more ? 5 : 0) * 80 }}rpx;'>
+    <view class='b-header'>
+      <view bindtap='moreInfo'>click</view>
+    </view>
+    <view class='b-center'>
+      <view class='flex'>
+        <view class='flex-1'>价格</view>
+        <view class='flex-1'>
+          <input placeholder='请出价' data-name="money" bindinput='bindChange' type='number' value='{{money}}'/>
+        </view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>入驻时间</view>
+        <view class='flex-1'>
+          <picker
+            mode="date"
+            value="{{startDate}}"
+            data-name="startDate"
+            bindchange="bindChange"
+          >
+            <view class="picker">{{startDate}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>离店时间</view>
+        <view class='flex-1'>
+          <picker
+            mode="date"
+            value="{{endDate}}"
+            data-name="endDate"
+            bindchange="bindChange"
+          >
+            <view class="picker">{{endDate}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>酒店位置</view>
+        <view class='flex-1'>酒店</view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>1km</view>
+        <view class='flex-1'>2km</view>
+        <view class='flex-1'>3km</view>
+        <view class='flex-1'>4km</view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>酒店星级</view>
+        <view class='flex-1'>
+          <picker
+            mode="selector"
+            bindchange="bindChange"
+            data-name="starIndex"
+            range='{{stars}}'
+            range-key="name"
+          >
+            <view class="picker">
+              {{stars[starIndex].name}}
+            </view>
+          </picker>
+        </view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>房型</view>
+        <view class='flex-1'>
+          <picker
+            mode="selector"
+            bindchange="bindChange"
+            data-name="bedIndex"
+            range='{{bed}}'
+            range-key="name"
+          >
+            <view class="picker">
+              {{bed[bedIndex].name}}
+            </view>
+          </picker>
+        </view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>到店时间</view>
+        <view class='flex-1'>
+          <picker
+            mode="selector"
+            bindchange="bindChange"
+            data-name="timeIndex"
+            range='{{time}}'
+            range-key="name"
+          >
+            <view class="picker">
+              {{time[timeIndex].name}}
+            </view>
+          </picker>
+        </view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>房间数量</view>
+        <view class='flex-1'>
+          <picker
+            mode="selector"
+            bindchange="bindChange"
+            data-name="houseIndex"
+            range='{{house}}'
+            range-key="name"
+          >
+            <view class="picker">
+              {{house[houseIndex].name}}
+            </view>
+          </picker>
+        </view>
+      </view>
+      <view class='flex'>
+        <view class='flex-1'>空白</view>
+      </view>
+    </view>
+  </view>
+  <view class='bottom2' bindtap='sendForm'>发布</view>
+<!-- </map> -->
+

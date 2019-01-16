@@ -5,6 +5,9 @@
   box-sizing: border-box;
   position: relative;
 }
+#map {
+  width: 100%;
+}
 
 .left {
   position: absolute;
@@ -43,4 +46,60 @@
   width: 100%;
   height: 100%;
   font-size: 20rpx;
+}
+.bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 10rpx;
+  transition: bottom 1s;
+  -moz-transition:bottom 1s; /* Firefox 4 */
+  -webkit-transition:bottom 1s; /* Safari and Chrome */
+  -o-transition:bottom 1s; /* Opera */
+}
+.b-header {
+  margin-top: 5rpx;
+  height: 75rpx;
+  line-height: 75rpx;
+  text-align: center;
+  box-shadow: 0px -5rpx 5rpx #999;
+  border-top-left-radius: 20rpx;
+  border-top-right-radius: 20rpx;
+  border-bottom: 1rpx solid #efefef;
+}
+.flex {
+  display: flex;
+  line-height: 80rpx;
+  height: 80rpx;
+  border-bottom: 1rpx solid #efefef;
+  font-size: 30rpx;
+  color: #666;
+  box-sizing: border-box;
+}
+.flex-1 {
+  flex: 1;
+  line-height: 80rpx;
+  height: 80rpx;
+  text-align: center;
+}
+.flex-1 input {
+  line-height: 80rpx;
+  height: 80rpx;
+}
+
+.bottom2 {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background-color: #ff9a14;
+  font-size: 32rpx;
+  line-height: 80rpx;
+  height: 80rpx;
+  text-align: center;
+  color: #fff;
+  z-index: 9;
 }
