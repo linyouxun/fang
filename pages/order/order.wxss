@@ -1,1 +1,27 @@
 /* pages/order/order.wxss */
+
+.flex {
+  position: fixed;
+  display: flex;
+  height: 88rpx;
+  line-height: 88rpx;
+  font-size: 32rpx;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #efefef;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.select-item {
+  color: red;
+}
+
+.list {
+  padding-top: 88rpx;
+}
+.item {
+  border: 1rpx solid #efefef;
+}

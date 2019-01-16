@@ -68,6 +68,7 @@ Page({
     bedIndex: 0,
     timeIndex: 0,
     houseIndex: 0,
+    position: ''
   },
   resetData() {
     const date = new Date();
@@ -84,11 +85,12 @@ Page({
       bedIndex: 0,
       timeIndex: 0,
       houseIndex: 0,
+      position: ''
     })
   },
   sendForm() {
-    const { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex } = this.data;
-    console.log(money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex);
+    const { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position } = this.data;
+    console.log(money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position);
   },
   bindChange(e) {
     this.setData({

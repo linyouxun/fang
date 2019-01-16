@@ -6,7 +6,11 @@
         <image bindtap="bindViewTap" class="img" src="{{userInfo.avatarUrl}}" mode="cover"></image>
       </block>
     </view>
-    <view class='order'>我的订单</view>
+    <view class='order'>
+      <navigator class='my-order' open-type="navigate" url="/pages/order/order">
+        我的订单
+      </navigator>
+    </view>
   </view>
   <view class='center'>城市</view>
 </view>
@@ -27,8 +31,8 @@
   enable-zoom="{{false}}"
 ></map>
   <view class='bottom' style='bottom: -{{(!more ? 5 : 0) * 80 }}rpx;'>
-    <view class='b-header'>
-      <view bindtap='moreInfo'>click</view>
+    <view class='b-header' bindtap="moreInfo">
+      <image class='moreInfo' style='!more ? "" : "transform: rotate(0deg);"' src='/images/down.png'></image>
     </view>
     <view class='b-center'>
       <view class='flex'>
@@ -65,7 +69,11 @@
       </view>
       <view class='flex'>
         <view class='flex-1'>酒店位置</view>
-        <view class='flex-1'>酒店</view>
+        <view class='flex-1'>
+          <navigator open-type="navigate" url="/pages/city/city">
+            {{position || '请选择位置'}}
+          </navigator>
+        </view>
       </view>
       <view class='flex'>
         <view class='flex-1'>1km</view>

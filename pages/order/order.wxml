@@ -1,2 +1,18 @@
 <!--pages/order/order.wxml-->
-<text>pages/order/order.wxml</text>
+<view class='flex'>
+  <view class='flex-1 {{key === "0" ? "select-item" : "" }}' bindtap='selectItem' data-key='0'>全部</view>
+  <view class='flex-1 {{key === "1" ? "select-item" : "" }}' bindtap='selectItem' data-key='1'>已完成</view>
+  <view class='flex-1 {{key === "2" ? "select-item" : "" }}' bindtap='selectItem' data-key='2'>已取消</view>
+</view>
+<view class='list'>
+  <view class='item'>
+    item
+  </view>
+  <view class='item'>
+    item
+  </view>
+  <view class='item'>
+    item
+  </view>
+</view>
+

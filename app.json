@@ -1,7 +1,9 @@
 {
   "pages":[
+    "pages/order/order",
     "pages/index/index",
-    "pages/order/order"
+    "pages/city/city",
+    "pages/orderDetail/orderDetail"
   ],
   "window":{
     "backgroundTextStyle":"light",

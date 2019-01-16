@@ -9,6 +9,9 @@
   width: 100%;
 }
 
+.my-order {
+  display: inline-block;
+}
 .left {
   position: absolute;
   left: 0;
@@ -47,6 +50,18 @@
   height: 100%;
   font-size: 20rpx;
 }
+
+.moreInfo {
+  width: 100rpx;
+  height: 60rpx;
+  margin-top: 10rpx;
+  transform: rotate(180deg);
+  transition: transform 1s;
+  -moz-transition:transform 1s; /* Firefox 4 */
+  -webkit-transition:transform 1s; /* Safari and Chrome */
+  -o-transition:transform 1s; /* Opera */
+}
+
 .bottom {
   position: fixed;
   bottom: 0;
