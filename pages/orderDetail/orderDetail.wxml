@@ -1,2 +1,40 @@
-<!--pages/orderDetail/orderDetail.wxml-->
-<text>pages/orderDetail/orderDetail.wxml</text>
+<view class='head'>
+  <view class='status'>
+    <view class='center'>
+      订单状态: 已取消
+    </view>
+    <view class='center'>
+      <view class='order-status'>
+        已付款
+      </view>
+      <image class='status-img' src='/images/arrow.png'></image>
+      <view class='order-status'>
+        已入住
+      </view> 
+      <image class='status-img' src='/images/arrow.png'></image>
+      <view class='order-status'>
+        已离店
+      </view>
+    </view>
+    <view class='status-tip'>
+      tips：为避免发生纠纷，特殊事项请您提前沟通确认
+    </view>
+  </view>
+  <view style='padding-left: 20rpx;'>
+    价格：<text class='price'>¥35.00</text>
+  </view>
+</view>
+<view class='list'>
+  <view class='item'>
+    <view class='item-name'>222</view>
+    <view class='item-price'>2222</view>
+  </view>
+  <view class='item'>
+    <view class='item-name'>222</view>
+    <view class='item-price'>2222</view>
+  </view>
+  <view class='item'>
+    <view class='item-name'>222</view>
+    <view class='item-price'>2222</view>
+  </view>
+</view>

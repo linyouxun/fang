@@ -1,18 +1,56 @@
 <!--pages/order/order.wxml-->
-<view class='flex'>
-  <view class='flex-1 {{key === "0" ? "select-item" : "" }}' bindtap='selectItem' data-key='0'>全部</view>
-  <view class='flex-1 {{key === "1" ? "select-item" : "" }}' bindtap='selectItem' data-key='1'>已完成</view>
-  <view class='flex-1 {{key === "2" ? "select-item" : "" }}' bindtap='selectItem' data-key='2'>已取消</view>
+<view class='flex fixed border-bottom head'>
+  <view class='flex-1 {{key == "0" ? "select-item" : "" }}' bindtap='selectItem' data-key='0'>全部</view>
+  <view class='flex-1 {{key == "1" ? "select-item" : "" }}' bindtap='selectItem' data-key='1'>已完成</view>
+  <view class='flex-1 {{key == "2" ? "select-item" : "" }}' bindtap='selectItem' data-key='2'>已取消</view>
 </view>
 <view class='list'>
   <view class='item'>
+    <view class='flex border-bottom order-status' style='padding: 0 20rpx;box-sizing: border-box;'>
+      <view class=''>
+        <text class='name'>订单号：</text>
+        <text>23333333</text>
+      </view>
+      <view class='flex-1'/>
+      <view class=''>取消</view>
+    </view>
+    <view style='padding: 20rpx; box-sizing: border-box;' class='border-bottom'>
+      <image class='head-img' src='http://m.youju360.com/static/5c3ee3a132d6087897686b8f/img/1547625488741_565197075668512284_01.png'></image>
+      <view class='content'>
+        <view>名字</view>
+        <view>三星级以下 - 单床房</view>
+        <view>1-15 至 1-16 - 16:00 - 1间</view>
+      </view>
+      <view class='money'>2.3</view>
+    </view>
+  </view>
+  <view class='item'>
+    <view class='flex border-bottom order-status' style='padding: 0 20rpx;box-sizing: border-box;'>
+      <view class=''>
+        <text class='name'>订单号：</text>
+        <text>23333333</text>
+      </view>
+      <view class='flex-1'/>
+      <view class=''>取消</view>
+    </view>
+    <view style='padding: 20rpx; box-sizing: border-box;' class='border-bottom'>
+      <image class='head-img' src='http://m.youju360.com/static/5c3ee3a132d6087897686b8f/img/1547625488741_565197075668512284_01.png'></image>
+      <view class='content'>
+        <view>名字</view>
+        <view>三星级以下 - 单床房</view>
+        <view>1-15 至 1-16 - 16:00 - 1间</view>
+      </view>
+      <view class='money'>2.3</view>
+    </view>
+  </view>
+  <view class='bottom-tip'>
+    已显示全部
+  </view>
+  <!-- <view class='item'>
     item
   </view>
   <view class='item'>
     item
-  </view>
-  <view class='item'>
-    item
-  </view>
+  </view> -->
 </view>
 

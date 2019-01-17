@@ -5,7 +5,20 @@ Page({
    * 页面的初始数据
    */
   data: {
-    key: 0
+    key: 0,
+    data: [{
+      id: 1, 
+      orderId: 23333,
+      img: 'http://m.youju360.com/static/5c3ee3a132d6087897686b8f/img/1547625488741_565197075668512284_01.png',
+      name: '名字',
+      star: '三星级',
+      house: '单床房',
+      startTime: '1-15',
+      endTime: '1-16',
+      time: '16:15',
+      count: '1间',
+    }],
+
   },
 
   selectItem(e) {

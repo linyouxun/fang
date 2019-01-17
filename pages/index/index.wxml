@@ -1,10 +1,10 @@
 <view class="header">
   <view class='left'>
     <view class="userinfo">
-      <button class='img' wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"></button>
-      <block wx:else>
+      <!-- <button class='img' wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"></button> -->
+      <!-- <block wx:else> -->
         <image bindtap="bindViewTap" class="img" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      </block>
+      <!-- </block> -->
     </view>
     <view class='order'>
       <navigator class='my-order' open-type="navigate" url="/pages/order/order">
@@ -16,7 +16,7 @@
 </view>
 
 <map
-  style="width: 100%; height: {{windowHeight - 100 - (more ? 10 : 5) * 80}}rpx;"
+  style="width: 100%; height: {{windowHeight - 100 - (more ? 10 : 6) * 80}}rpx;"
   id="map"
   latitude='{{latitude}}'
   longitude='{{longitude}}'
@@ -30,9 +30,9 @@
   show-location="{{true}}"
   enable-zoom="{{false}}"
 ></map>
-  <view class='bottom' style='bottom: -{{(!more ? 5 : 0) * 80 }}rpx;'>
+  <view class='bottom' style='bottom: -{{(!more ? 4 : 0) * 80 }}rpx;'>
     <view class='b-header' bindtap="moreInfo">
-      <image class='moreInfo' style='!more ? "" : "transform: rotate(0deg);"' src='/images/down.png'></image>
+      <image class='moreInfo' style='{{!more ? "" : "transform: rotate(0deg);"}}' src='/images/down.png'></image>
     </view>
     <view class='b-center'>
       <view class='flex'>
@@ -75,12 +75,12 @@
           </navigator>
         </view>
       </view>
-      <view class='flex'>
+      <!-- <view class='flex'>
         <view class='flex-1'>1km</view>
         <view class='flex-1'>2km</view>
         <view class='flex-1'>3km</view>
         <view class='flex-1'>4km</view>
-      </view>
+      </view> -->
       <view class='flex'>
         <view class='flex-1'>酒店星级</view>
         <view class='flex-1'>
@@ -153,3 +153,15 @@
   <view class='bottom2' bindtap='sendForm'>发布</view>
 <!-- </map> -->
 
+
+<view class='model {{isShowModel ? "" : "hide"}}'>
+  <view class='m-content'>
+    <view class='m-title'> 喵个房获取授权 </view>
+    <view class='m-tip'>
+      · 获取你的公开信息（昵称、头像、地区及性别）
+    </view>
+    <view>
+    <button class='m-button' open-type="getUserInfo" bindgetuserinfo="getUserInfo" bindtap='hideMode'> 允许 </button>
+    </view>
+  </view>
+</view>

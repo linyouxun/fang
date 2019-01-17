@@ -1,14 +1,24 @@
 /* pages/order/order.wxss */
-
-.flex {
+page {
+  font-size: 32rpx;
+  background-color: #eee;
+}
+.fixed {
   position: fixed;
-  display: flex;
+}
+.head {
   height: 88rpx;
   line-height: 88rpx;
   font-size: 32rpx;
   width: 100%;
   text-align: center;
-  border: 1px solid #efefef;
+  background-color: #fff;
+}
+.border-bottom {
+  border-bottom: 1px solid #efefef;
+}
+.flex {
+  display: flex;
 }
 
 .flex-1 {
@@ -23,5 +33,50 @@
   padding-top: 88rpx;
 }
 .item {
-  border: 1rpx solid #efefef;
+  border-bottom: 1rpx solid #efefef;
+  /* padding: 0 20rpx; */
+  color: #111;
+  background-color: #fff;
+  margin-bottom:10px;
+}
+.order-status {
+  height: 80rpx;
+  line-height: 80rpx;
+}
+.head-img {
+  width: 150rpx;
+  height: 150rpx;
+  display: inline-block;
+  vertical-align: text-top;
+}
+
+.content {
+  min-height: 150rpx;
+  margin-left: 20rpx;
+  display: inline-block;
+  vertical-align: text-top;
+  font-size: 28rpx;
+  color: #666;
+}
+.content view {
+  height: 50rpx;
+  line-height: 50rpx;
+}
+.name {
+  color: #666;
+}
+.money {
+  float: right;
+  height: 150rpx;
+  line-height: 150rpx;
+  color: red;
+}
+
+.bottom-tip {
+  font-size: 28rpx;
+  color: #666;
+  width: 100%;
+  text-align: center;
+  height: 40rpx;
+  line-height: 40rpx;
 }

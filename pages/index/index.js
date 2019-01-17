@@ -1,7 +1,9 @@
 //index.js
 //获取应用实例
+
 const app = getApp();
-const { stars, bed, time, house } = require('../../utils/const.js');
+const Util = require('../../utils/util.js');
+const { stars, bed, time, house, serverPath } = require('../../utils/const.js');
 
 Page({
   data: {
@@ -68,7 +70,8 @@ Page({
     bedIndex: 0,
     timeIndex: 0,
     houseIndex: 0,
-    position: ''
+    position: '',
+    isShowModel: false
   },
   resetData() {
     const date = new Date();
@@ -90,7 +93,38 @@ Page({
   },
   sendForm() {
     const { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position } = this.data;
-    console.log(money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position);
+    const params = { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position};
+    Util.request({
+      url: serverPath + '/order/add',
+      method: "GET",
+      data: {
+        info: JSON.stringify(params),
+        userId: app.globalData.openId, 
+        position,
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == -1) {
+          // 没有找到用户信息
+          this.setData({
+            isShowModel: true
+          });
+        } else {
+          // 获取用户信息
+          app.globalData.userInfo = res.data.data
+          this.setData({
+            userInfo: res.data.data,
+            hasUserInfo: true
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
+
   },
   bindChange(e) {
     this.setData({
@@ -128,8 +162,6 @@ Page({
   regionchange(e) {
     this.mapCtx.getCenterLocation({
       success:(res) => {
-        console.log(res.longitude)
-        console.log(res.latitude)
         const markers = this.data.markers;
         markers[0].longitude = res.longitude;
         markers[0].latitude = res.latitude;
@@ -149,6 +181,146 @@ Page({
     });
     this.resetData();
     this.mapCtx = wx.createMapContext('map');
+    // 登录
+    wx.login({
+      success: res => {
+        // 发送 res.code 到后台换取 openId, sessionKey, unionId
+        wx.showLoading({
+          title: '正在登陆...',
+        });
+        Util.request({
+          url: serverPath + '/user/wechatLogin',
+          method: "GET",
+          data: {
+            code: res.code
+          },
+          header: {
+            'content-type': 'application/json' // 默认值
+          },
+          success: (res) => {
+            wx.hideLoading();
+            if (res.data.errorCode === 0) {
+              app.globalData.openId = res.data.data;
+              wx.showLoading({
+                title: '正在获取登陆信息...',
+              });
+              // 获取微信信息
+              Util.request({
+                url: serverPath + '/user/get',
+                method: "GET",
+                data: {
+                  openId: res.data.data
+                },
+                header: {
+                  'content-type': 'application/json' // 默认值
+                },
+                success: (res) => {
+                  if (res.data.errorCode == -1) {
+                    // 没有找到用户信息
+                    this.setData({
+                      isShowModel: true
+                    });
+                  } else {
+                    // 获取用户信息
+                    app.globalData.userInfo = res.data.data
+                    this.setData({
+                      userInfo: res.data.data,
+                      hasUserInfo: true
+                    })
+                  }
+                },
+                complete() {
+                  wx.hideLoading();
+                }
+              })
+            } else {
+              // todo 登陆失败
+            }
+          },
+          fail() {
+            wx.hideLoading();
+          }
+        })
+      }
+    })
+
+    // 获取城市
+    // 获取微信信息
+    Util.request({
+      url: serverPath + '/hotel/listHotel',
+      method: "GET",
+      data: {
+        cityName: '深圳'
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          if (!!res.data.data) {
+            if (res.data.data.length > 0 ) {
+              const markers = res.data.data.map(item => {
+                const ll = item.map.split(',');
+                let lat = 0;
+                let lon = 0;
+                if (ll.length > 0) {
+                  lon = ll[0];
+                  lat = ll[1];
+                }
+                return {
+                  street: item.street,
+                  telephone: item.telephone,
+                  callout: {
+                    content: item.hotelName + '\r\n地址: ' + (item.street || '无') + '\r\n电话: ' + (item.telephone || '无'),
+                    color: '#aaa',
+                    padding: '10px',
+                    borderWidth: '1px',
+                    borderColor: '#efefef',
+                    borderRadius: '5px',
+                  },
+                  id: item.hotelId,
+                  latitude: +lat,
+                  longitude: +lon,
+                  name: item.hotelName,
+                  iconPath: '/images/hotel.png'
+                }
+              });
+              const pos = {
+                callout: {
+                  content: '选择中心点',
+                  color: '#aaa',
+                  padding: '5px',
+                  borderWidth: '1px',
+                  borderColor: '#efefef',
+                  borderRadius: '5px',
+                },
+                id: 1,
+                latitude: markers[0].latitude,
+                longitude: markers[0].longitude,
+                name: '选择中心点',
+                iconPath: '/images/location.png'
+              }
+              let data = {
+                markers: [pos, ...markers]
+              }
+              if (markers.length > 0) {
+                data['position'] = markers[0].street;
+              }
+              this.setData(data)
+
+            } 
+          } else {
+            // wx.showToast({
+            //   title: '选择区域没有酒店',
+            // })
+          }
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
+
     // this.mapCtx.moveToLocation();
     if (app.globalData.userInfo) {
       this.setData({
@@ -177,12 +349,78 @@ Page({
       })
     }
   },
-  getUserInfo: function(e) {
-    console.log(e)
-    app.globalData.userInfo = e.detail.userInfo
+  hideMode() {
     this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
+      isShowModel: false
     })
+  },
+  getUserInfo: function(e) {
+    if (e.detail.errMsg == 'getUserInfo:ok') {
+      // 获取到用户信息
+      app.globalData.userInfo = e.detail.userInfo
+      this.setData({
+        userInfo: e.detail.userInfo,
+        hasUserInfo: true
+      })
+      Util.request({
+        url: serverPath + '/user/bindWechat',
+        method: "GET",
+        data: {
+          openId: app.globalData.openId,
+          // userInfo: JSON.stringify(Object.assign(e.detail.userInfo, {
+          //   "nickName": "眼睛"
+          // }))
+          userInfo: JSON.stringify(e.detail.userInfo)
+        },
+        header: {
+          'content-type': 'application/json' // 默认值
+        },
+        success: (res) => {
+          if (res.data.errorCode == -1) {
+            // 没有找到用户信息
+            this.setData({
+              isShowModel: true
+            });
+          } else {
+            // 获取微信信息
+            Util.request({
+              url: serverPath + '/user/get',
+              method: "GET",
+              data: {
+                openId: app.globalData.openId
+              },
+              header: {
+                'content-type': 'application/json' // 默认值
+              },
+              success: (res) => {
+                if (res.data.errorCode == -1) {
+                  // 没有找到用户信息
+                  this.setData({
+                    isShowModel: true
+                  });
+                } else {
+                  // 获取用户信息
+                  app.globalData.userInfo = res.data.data
+                  this.setData({
+                    userInfo: res.data.data,
+                    hasUserInfo: true
+                  })
+                }
+              },
+              complete() {
+                wx.hideLoading();
+              }
+            })
+          }
+        },
+        complete() {
+          wx.hideLoading();
+        }
+      })
+    } else {
+      this.setData({
+        isShowModel: true
+      })
+    }
   }
 })

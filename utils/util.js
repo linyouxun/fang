@@ -14,6 +14,25 @@ const formatNumber = n => {
   return n[1] ? n : '0' + n
 }
 
+const request = (params) => {
+  const { success, complete } = params;
+  delete params['success'];
+  delete params['complete'];
+  wx.request(Object.assign(params, {
+    complete: function (res) {
+      if (!!complete) {
+        complete(res)
+      }
+    },
+    success: function (res) {
+      if (!!success) {
+        success(res)
+      }
+    }
+  }));
+}
+
 module.exports = {
-  formatTime: formatTime
+  formatTime: formatTime,
+  request
 }
