@@ -1,7 +1,7 @@
 <view class='head'>
   <view class='status'>
     <view class='center'>
-      订单状态: 已取消
+      订单状态: {{item.statusName}}
     </view>
     <view class='center'>
       <view class='order-status'>
@@ -21,20 +21,59 @@
     </view>
   </view>
   <view style='padding-left: 20rpx;'>
-    价格：<text class='price'>¥35.00</text>
+    价格：<text class='price'>¥{{item.money}}</text>
+    <view class='cancel-btn' bindtap='cancelOrder' wx:if="{{item.state == 1}}">
+      取消订单
+    </view>
   </view>
 </view>
 <view class='list'>
   <view class='item'>
-    <view class='item-name'>222</view>
-    <view class='item-price'>2222</view>
+    <view class='item-name'>订单号</view>
+    <view class='item-price'>{{item.id}}</view>
   </view>
-  <view class='item'>
-    <view class='item-name'>222</view>
-    <view class='item-price'>2222</view>
+  <view class='item' wx:if="{{!!item.star}}">
+    <view class='item-name'>酒店星级</view>
+    <view class='item-price'>{{item.star}}</view>
   </view>
-  <view class='item'>
-    <view class='item-name'>222</view>
-    <view class='item-price'>2222</view>
+  <view class='item' wx:if="{{!!item.house}}">
+    <view class='item-name'>房型</view>
+    <view class='item-price'>{{item.house}}</view>
+  </view>
+  <view class='item' wx:if="{{!!item.startTime}}">
+    <view class='item-name'>入住时间</view>
+    <view class='item-price'>{{item.startTime}} 至 {{item.endTime}}</view>
+  </view>
+  <view class='item' wx:if="{{!!item.time}}">
+    <view class='item-name'>到店时间</view>
+    <view class='item-price'>{{item.time}}</view>
+  </view>
+  <view class='item' wx:if="{{!!item.count}}">
+    <view class='item-name'>房间数量</view>
+    <view class='item-price'>{{item.count}}</view>
+  </view>
+  <view class='item' wx:if="{{!!item.breakfast}}">
+    <view class='item-name'>早餐</view>
+    <view class='item-price'>{{item.breakfast}}</view>
+  </view>
+  <view class='item' wx:if="{{!!item.addbed}}">
+    <view class='item-name'>加床</view>
+    <view class='item-price'>{{item.addbed}}</view>
+  </view>
+  <view class='item2' wx:if="{{!!item.facilities}}">
+    <view class='item-name2'>酒店设施</view>
+    <view class='item-price2'>{{item.facilities}}</view>
+  </view>
+  <view class='item2' wx:if="{{!!item.remark}}">
+    <view class='item-name2'>备注</view>
+    <view class='item-price2'>{{item.remark}}</view>
+  </view>
+  <view class='item' wx:if="{{!!item.createTime}}">
+    <view class='item-name'>下单时间</view>
+    <view class='item-price'>{{item.createTime}}</view>
+  </view>
+  <view class='item' wx:if="{{!!item.cancelTime}}">
+    <view class='item-name'>取消时间</view>
+    <view class='item-price'>{{item.cancelTime}}</view>
   </view>
 </view>

@@ -2,6 +2,7 @@
   "pages":[
     "pages/index/index",
     "pages/order/order",
+    "pages/moreDetail/moreDetail",
     "pages/orderDetail/orderDetail",
     "pages/city/city"
   ],

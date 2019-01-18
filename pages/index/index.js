@@ -71,14 +71,18 @@ Page({
     timeIndex: 0,
     houseIndex: 0,
     position: '',
-    isShowModel: false
+    isShowModel: false,
+  },
+  moreDetail() {
+    wx.navigateTo({
+      url: '/pages/moreDetail/moreDetail',
+    });
   },
   resetData() {
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth();
     const day = 11;
-    console.log(day);
     const dateStr = year + '-' + '00'.substr(0, 2 - ((month + 1) + '').length) + (month + 1) + '-' + '00'.substr(0, 2- (day + '').length) + day ;
     this.setData({
       money: 0,
@@ -92,32 +96,60 @@ Page({
     })
   },
   sendForm() {
-    const { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position } = this.data;
-    const params = { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position};
+    const { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position, userInfo } = this.data;
+    let breakfast = [];
+    let addbed = [];
+    let facilities = [];
+    let remark = '';
+    try {
+      breakfast = wx.getStorageSync('breakfast');
+      addbed = wx.getStorageSync('addbed');
+      facilities = wx.getStorageSync('facilities');
+      remark = wx.getStorageSync('remark');
+    } catch (e) {
+      // Do something when catch error
+    }
+    const params = { 
+      money: +money, 
+      startDate, 
+      endDate, 
+      starIndex, 
+      bedIndex, 
+      timeIndex, 
+      houseIndex, 
+      position,
+      createTime: new Date().Format('yyyy-MM-dd hh:mm:ss'),
+      breakfast: breakfast, 
+      addbed: addbed, 
+      facilities: facilities, 
+      remark
+    };
+    if (+money < 10) {
+      return wx.showToast({
+        title: '价格太低了',
+        icon: 'none'
+      });
+    }
+    wx.showLoading({
+      title: '正在发布中...',
+    });
     Util.request({
       url: serverPath + '/order/add',
       method: "GET",
       data: {
         info: JSON.stringify(params),
-        userId: app.globalData.openId, 
+        userId: userInfo.id,
         position,
       },
       header: {
         'content-type': 'application/json' // 默认值
       },
       success: (res) => {
-        if (res.data.errorCode == -1) {
-          // 没有找到用户信息
-          this.setData({
-            isShowModel: true
+        if (res.data.errorCode == 0) {
+          return wx.showToast({
+            title: '发布成功',
+            icon: 'none'
           });
-        } else {
-          // 获取用户信息
-          app.globalData.userInfo = res.data.data
-          this.setData({
-            userInfo: res.data.data,
-            hasUserInfo: true
-          })
         }
       },
       complete() {

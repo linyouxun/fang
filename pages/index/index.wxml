@@ -149,6 +149,9 @@
         <view class='flex-1'>空白</view>
       </view>
     </view>
+    <view class='more-detail {{more ? "" : "hide-detail"}}' bindtap='moreDetail'>
+      更多要求→
+    </view>
   </view>
   <view class='bottom2' bindtap='sendForm'>发布</view>
 <!-- </map> -->

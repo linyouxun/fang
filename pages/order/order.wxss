@@ -27,6 +27,7 @@ page {
 
 .select-item {
   color: red;
+  box-shadow: 0px -1px 0px red inset;
 }
 
 .list {
@@ -77,6 +78,6 @@ page {
   color: #666;
   width: 100%;
   text-align: center;
-  height: 40rpx;
-  line-height: 40rpx;
+  height: 60rpx;
+  line-height: 60rpx;
 }

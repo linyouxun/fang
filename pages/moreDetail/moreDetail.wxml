@@ -1,0 +1,33 @@
+<view class='head'>
+  早餐
+</view>
+<view class='list'>
+  <view class='item {{!!item.select ? "item-selected" : ""}}' wx:for="{{breakfast}}" wx:key="{{index}}" bindtap='clickItem' data-name="breakfast" data-index="{{index}}"> 
+    {{item.name}}
+  </view>
+</view>
+<view class='head'>
+  加床
+</view>
+<view class='list'>
+  <view class='item {{!!item.select ? "item-selected" : ""}}' wx:for="{{addbed}}" wx:key="{{index}}" bindtap='clickItem' data-name="addbed" data-index="{{index}}"> 
+    {{item.name}}
+  </view>
+</view>
+<view class='head'>
+  酒店设施
+</view>
+<view class='list'>
+  <view class='item {{!!item.select ? "item-selected" : ""}}' wx:for="{{facilities}}" wx:key="{{index}}" bindtap='clickItem' data-name="facilities" data-index="{{index}}"> 
+    {{item.name}}
+  </view>
+</view>
+
+<textarea placeholder='备注' bindinput='textChange' value='{{remark}}'>
+</textarea>
+
+<view class='tip'>温馨提示：条件过多，可能导致无法匹配到酒店啊~</view>
+
+<view class='bottom' bindtap='sendMore'>确定</view>
+
+

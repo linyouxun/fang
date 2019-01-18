@@ -1,4 +1,9 @@
 // pages/order/order.js
+
+const app = getApp();
+const Util = require('../../utils/util.js');
+const { stars, bed, time, house, serverPath, orderStatus } = require('../../utils/const.js');
+
 Page({
 
   /**
@@ -6,25 +11,30 @@ Page({
    */
   data: {
     key: 0,
-    data: [{
-      id: 1, 
-      orderId: 23333,
-      img: 'http://m.youju360.com/static/5c3ee3a132d6087897686b8f/img/1547625488741_565197075668512284_01.png',
-      name: '名字',
-      star: '三星级',
-      house: '单床房',
-      startTime: '1-15',
-      endTime: '1-16',
-      time: '16:15',
-      count: '1间',
-    }],
-
+    data: [],
+    tempData: []
   },
 
   selectItem(e) {
+    const { data } = this.data;
+    if (e.target.dataset.key == 0) {
+      this.setData({
+        tempData: data
+      })
+    }
+    if (e.target.dataset.key == 1) {
+      this.setData({
+        tempData: data.filter(item => item.state == 2)
+      })
+    }
+    if (e.target.dataset.key == 2) {
+      this.setData({
+        tempData: data.filter(item => item.state == 3)
+      })
+    }
     this.setData({
       key: e.target.dataset.key
-    })
+    });
   },
   /**
    * 生命周期函数--监听页面加载
@@ -37,6 +47,49 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
+    // app.globalData.userInfo = { "avatarUrl": "https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eohaTjL6SHyhuKYqq1Ezlx5tDf0lmITmyicfhECAKmfx3jxmGurW58jsYh3LJ3cOL8NZMVHVicOnFjQ/132", "gender": "1", "id": 3, "nickName": "眼睛", "openId": "o7DVH4zxyEq9LX267lL9IKAp2PGI" };
+    wx.showLoading({
+      title: '订单正在加载...',
+    });
+    Util.request({
+      url: serverPath + '/user/listOrder',
+      method: "GET",
+      data: {
+        userId: app.globalData.userInfo.id
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          const data = res.data.data.map(item => {
+            try {
+              const d = JSON.parse(item.info);
+              item['img'] = app.globalData.userInfo.avatarUrl;
+              item['name'] = item.position;
+              item['star'] = stars[d.starIndex].name;
+              item['startTime'] = d.startDate.substr(5, 10);
+              item['endTime'] = d.endDate.substr(5, 10);
+              item['time'] = time[d.timeIndex].name;
+              item['count'] = house[d.houseIndex].name;
+              item['house'] = bed[d.bedIndex].name;
+              item['statusName'] = orderStatus[item.state];
+              item['money'] = d.money;
+            } catch(e) {
+              
+            }
+            return item;
+          });
+          this.setData({
+            data,
+            tempData: data,
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
 
   },
 
@@ -44,7 +97,49 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+    // app.globalData.userInfo = { "avatarUrl": "https://wx.qlogo.cn/mmopen/vi_32/DYAIOgq83eohaTjL6SHyhuKYqq1Ezlx5tDf0lmITmyicfhECAKmfx3jxmGurW58jsYh3LJ3cOL8NZMVHVicOnFjQ/132", "gender": "1", "id": 3, "nickName": "眼睛", "openId": "o7DVH4zxyEq9LX267lL9IKAp2PGI" };
+    wx.showLoading({
+      title: '订单正在加载...',
+    });
+    Util.request({
+      url: serverPath + '/user/listOrder',
+      method: "GET",
+      data: {
+        userId: app.globalData.userInfo.id
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          const data = res.data.data.map(item => {
+            try {
+              const d = JSON.parse(item.info);
+              item['img'] = app.globalData.userInfo.avatarUrl;
+              item['name'] = item.position;
+              item['star'] = stars[d.starIndex].name;
+              item['startTime'] = d.startDate.substr(5, 10);
+              item['endTime'] = d.endDate.substr(5, 10);
+              item['time'] = time[d.timeIndex].name;
+              item['count'] = house[d.houseIndex].name;
+              item['house'] = bed[d.bedIndex].name;
+              item['statusName'] = orderStatus[item.state];
+              item['money'] = d.money;
+            } catch (e) {
 
+            }
+            return item;
+          });
+          this.setData({
+            data,
+            tempData: data,
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
   },
 
   /**

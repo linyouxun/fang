@@ -5,6 +5,7 @@ page {
 .head {
   background-color: #fff;
   font-size: 28rpx;
+  padding-bottom: .1rpx;
 }
 .status {
   color: #fff;
@@ -67,6 +68,7 @@ page {
 .item {
   background-color: #fff;
   display: flex;
+  flex-wrap: wrap;
   height: 80rpx;
   line-height: 80rpx;
   font-size: 28rpx;border-bottom: 2rpx solid #eee;
@@ -78,4 +80,36 @@ page {
 }
 .item-price {
   color: #111;
+}
+
+.cancel-btn {
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 26rpx;
+  text-align: center;
+  background-color: #ff6300;
+  color: #fff;
+  width: 710rpx;
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.item2 {
+  background-color: #fff;
+  flex-wrap: wrap;
+  line-height: 80rpx;
+  font-size: 28rpx;border-bottom: 2rpx solid #eee;
+}
+.item-name2 {
+  width: 200rpx;
+  padding-left: 20rpx;
+  color: #666;
+  display: inline-block;
+  vertical-align: text-top;
+}
+.item-price2 {
+  color: #111;
+  width: 490rpx;
+  display: inline-block;
+  vertical-align: text-top;
 }

@@ -1,18 +1,86 @@
 // pages/orderDetail/orderDetail.js
+const { stars, bed, time, house, serverPath, orderStatus } = require('../../utils/const.js');
+const Util = require('../../utils/util.js');
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-  
+    item: {}
+  },
+  cancelOrder() {
+    const { item } = this.data;
+    let d = {};
+    try {
+      d = JSON.parse(item.info);
+      d['cancelTime'] = new Date().Format('yyyy-MM-dd hh:mm:ss');
+    } catch (e) { }
+    wx.showLoading({
+      title: '订单正在取消...',
+    });
+    Util.request({
+      url: serverPath + '/order/update',
+      method: "GET",
+      data: {
+        orderId: item.id,
+        info: JSON.stringify(d),
+        state: 3
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          item.state = '3';
+          item['statusName'] = orderStatus['3'];
+          item['cancelTime'] = d['cancelTime'];
+          this.setData({
+            item
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-  
+    // options = { "info": "{\"money\":\"10\",\"startDate\":\"2019-01-11\",\"endDate\":\"2019-01-11\",\"starIndex\":0,\"bedIndex\":0,\"timeIndex\":0,\"houseIndex\":0,\"position\":\"南湖路3012号\"}", id: "2", "userId": "3", "state": "1" }
+    let item = {};
+    try {
+      const d = JSON.parse(options.info);
+      item['star'] = stars[d.starIndex].name;
+      item['startTime'] = d.startDate;
+      item['endTime'] = d.endDate;
+      item['time'] = time[d.timeIndex].name;
+      item['count'] = house[d.houseIndex].name;
+      item['house'] = bed[d.bedIndex].name;
+      item['statusName'] = orderStatus[options.state];
+      item['createTime'] = d.createTime;
+      item['cancelTime'] = d.cancelTime;
+      item['remark'] = d.remark;
+      item['money'] = d.money;
+      item['id'] = options.id;
+      item['info'] = options.info;
+      item['state'] = options.state;
+      if (!!d.addbed && d.addbed.length > 0) {
+        item['addbed'] = d.addbed.filter(item => !!item.select).map(item => item.name).join(', ');
+      }
+      if (!!d.facilities && d.facilities.length > 0) {
+        item['facilities'] = d.facilities.filter(item => !!item.select).map(item => item.name).join(', ');
+      }
+      if (!!d.breakfast && d.breakfast.length > 0) {
+        item['breakfast'] = d.breakfast.filter(item => !!item.select).map(item => item.name).join(', ');
+      }
+    } catch (e) {}
+    this.setData({
+      item
+    })
   },
 
   /**
