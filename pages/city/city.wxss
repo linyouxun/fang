@@ -1,1 +1,44 @@
 /* pages/city/city.wxss */
+
+.city-list {
+  padding: 20rpx;
+}
+
+.city-item {
+  background-color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 28rpx;
+  border-bottom: 2rpx solid #eee;
+}
+
+.search-item {
+  margin: 20rpx;
+  width: 700rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #efefef;
+  font-size: 32rpx;
+  padding-left: 10rpx;
+}
+
+.f {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.code-list {
+  width: 40rpx;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+.code-item {
+  font-size: 20rpx;
+}
