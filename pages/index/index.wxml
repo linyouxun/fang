@@ -38,7 +38,7 @@
       <view class='flex'>
         <view class='flex-1'>价格</view>
         <view class='flex-1'>
-          <input placeholder='请出价' data-name="money" bindinput='bindChange' type='number' value='{{money}}'/>
+          <input placeholder='请出价' data-name="money" bindinput='bindChange' value='{{money}}'/>
         </view>
       </view>
       <view class='flex'>

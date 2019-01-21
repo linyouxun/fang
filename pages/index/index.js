@@ -96,7 +96,7 @@ Page({
     })
   },
   sendForm() {
-    const { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position, userInfo } = this.data;
+    let { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position, userInfo } = this.data;
     let breakfast = [];
     let addbed = [];
     let facilities = [];
@@ -109,8 +109,9 @@ Page({
     } catch (e) {
       // Do something when catch error
     }
+    money = parseInt(money);
     const params = { 
-      money: +money, 
+      money, 
       startDate, 
       endDate, 
       starIndex, 
@@ -124,7 +125,13 @@ Page({
       facilities: facilities, 
       remark
     };
-    if (+money < 10) {
+    if (isNaN(money)) {
+      return wx.showToast({
+        title: '输入非法',
+        icon: 'none'
+      });
+    }
+    if (money < 10) {
       return wx.showToast({
         title: '价格太低了',
         icon: 'none'
@@ -453,6 +460,13 @@ Page({
       this.setData({
         isShowModel: true
       })
+    }
+  },
+  onShareAppMessage: function () {
+    return {
+      title: '喵个房',
+      desc: '快速定位查找你所需要的酒店',
+      path: '/pages/index/index'
     }
   }
 })
