@@ -1,10 +1,10 @@
 {
   "pages":[
     "pages/index/index",
+    "pages/city/city",
     "pages/order/order",
     "pages/moreDetail/moreDetail",
-    "pages/orderDetail/orderDetail",
-    "pages/city/city"
+    "pages/orderDetail/orderDetail"
   ],
   "window":{
     "backgroundTextStyle":"light",

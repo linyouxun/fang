@@ -3,7 +3,7 @@
 
 const app = getApp();
 const Util = require('../../utils/util.js');
-const { stars, bed, time, house, serverPath } = require('../../utils/const.js');
+const { stars, bed, time, house, priceList, serverPath } = require('../../utils/const.js');
 
 Page({
   data: {
@@ -11,12 +11,15 @@ Page({
     bed: bed, 
     time: time,
     house: house,
+    priceList: priceList,
     windowHeight: 1206,
     userInfo: {},
     hasUserInfo: false,
     canIUse: wx.canIUse('button.open-type.getUserInfo'),
     latitude:22.547951,
     longitude:114.127348,
+    cityName: '深圳',
+    isGetOrder: true, // 是否在抢单
     // 标注信息
     markers: [{
       callout: {
@@ -72,6 +75,41 @@ Page({
     houseIndex: 0,
     position: '',
     isShowModel: false,
+    orderObj: {}
+  },
+  bindPrice(e) {
+    const { priceList, orderObj } = this.data;
+    const price = priceList[e.detail.value];
+    delete orderObj['info'];
+    orderObj['money'] = +orderObj['money'] + price.price;
+    this.updateOrder(orderObj)
+  },
+  updateOrder(orderObj) {
+    wx.showLoading({
+      title: '订单正在加价...',
+    });
+    Util.request({
+      url: serverPath + '/order/update',
+      method: "GET",
+      data: {
+        orderId: orderObj.id,
+        info: JSON.stringify(orderObj),
+        state: 1
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          this.setData({
+            orderObj
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
   },
   moreDetail() {
     wx.navigateTo({
@@ -96,7 +134,7 @@ Page({
     })
   },
   sendForm() {
-    let { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position, userInfo } = this.data;
+    let { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position, userInfo, latitude, longitude } = this.data;
     let breakfast = [];
     let addbed = [];
     let facilities = [];
@@ -146,13 +184,18 @@ Page({
       data: {
         info: JSON.stringify(params),
         userId: userInfo.id,
-        position,
+        position: [longitude, latitude].join(','),
       },
       header: {
         'content-type': 'application/json' // 默认值
       },
       success: (res) => {
         if (res.data.errorCode == 0) {
+          this.setData({
+            isGetOrder: true,
+            more: false,
+            orderObj: Object.assign(params, {id: res.data.data})
+          })
           return wx.showToast({
             title: '发布成功',
             icon: 'none'
@@ -165,6 +208,48 @@ Page({
     })
 
   },
+
+  myOrder() {
+    console.log('log', '抢单');
+    Util.request({
+      url: serverPath + '/user/myOrder',
+      method: "GET",
+      data: {
+        userId: app.globalData.userInfo.id,
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          let info = {};
+          try {
+            info = JSON.parse(res.data.data.info || '{}')
+          } catch(e) {}
+          // 是否在抢单
+          if (!!res.data.data.id) {
+            this.setData({
+              isGetOrder: true,
+              orderObj: Object.assign(info, res.data.data, {
+                position: info.position
+              })
+            })
+            this.getLocation(true);
+          } else {
+            this.setData({
+              isGetOrder: false,
+              orderObj: {}
+            })
+            this.getLocation(false);
+          }
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
+  },
+
   bindChange(e) {
     this.setData({
       [e.target.dataset.name]: e.detail.value
@@ -172,8 +257,12 @@ Page({
   },
   bindtap(e) {
   },
+  addPrice() {
+    console.log('price');
+  },
   moreInfo() {
-    const { more } = this.data;
+    const { more, isGetOrder } = this.data;
+    if (isGetOrder) return;
     this.setData({
       more: !more
     })
@@ -194,6 +283,16 @@ Page({
   },
   markertap(e) {
     console.log(e)
+    const { markers } = this.data;
+    for(let i = 1; i < markers.length; i++) {
+      if (markers[i].id == e.markerId) {
+        // 更新位置
+        this.setData({
+          position: markers[i].street
+        })
+        break;
+      }
+    }
   },
   controltap(e) {
     console.log(e.controlId)
@@ -214,90 +313,77 @@ Page({
   bindViewTap: function() {
     console.log('更新头像信息');
   },
-  onLoad: function () {
+  onLoad: function (options) {
     this.setData({
       windowHeight: 750 / wx.getSystemInfoSync().windowWidth * wx.getSystemInfoSync().windowHeight
     });
     this.resetData();
     this.mapCtx = wx.createMapContext('map');
-    // 登录
-    wx.login({
-      success: res => {
-        // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        wx.showLoading({
-          title: '正在登陆...',
-        });
-        Util.request({
-          url: serverPath + '/user/wechatLogin',
-          method: "GET",
-          data: {
-            code: res.code
-          },
-          header: {
-            'content-type': 'application/json' // 默认值
-          },
-          success: (res) => {
-            wx.hideLoading();
-            if (res.data.errorCode === 0) {
-              app.globalData.openId = res.data.data;
-              wx.showLoading({
-                title: '正在获取登陆信息...',
-              });
-              // 获取微信信息
-              Util.request({
-                url: serverPath + '/user/get',
-                method: "GET",
-                data: {
-                  openId: res.data.data
-                },
-                header: {
-                  'content-type': 'application/json' // 默认值
-                },
-                success: (res) => {
-                  if (res.data.errorCode == -1) {
-                    // 没有找到用户信息
-                    this.setData({
-                      isShowModel: true
-                    });
-                  } else {
-                    // 获取用户信息
-                    app.globalData.userInfo = res.data.data
-                    this.setData({
-                      userInfo: res.data.data,
-                      hasUserInfo: true
-                    })
-                  }
-                },
-                complete() {
-                  wx.hideLoading();
-                }
-              })
-            } else {
-              // todo 登陆失败
-            }
-          },
-          fail() {
-            wx.hideLoading();
-          }
-        })
-      }
-    })
+    // if (!!options.cityName) {
+    //   // 加载酒店列表
+    //   this.getHotelList({
+    //     // longi: res.data.result.lng,
+    //     // lati: res.data.result.lat,
+    //     // distance: 10000,
+    //     // longi: 114.022637,
+    //     // lati: 22.547901,
+    //     // distance: 10000,
+    //     // cityName: '深圳'  经度:114.022637 纬度: 22.547901
+    //     cityName: options.cityName
+    //   })
+    // } else {
+    //   // 获取定位信息
+    //   this.getLocation();
+    // }
 
+    // // this.mapCtx.moveToLocation();
+    // if (app.globalData.userInfo) {
+    //   this.setData({
+    //     userInfo: app.globalData.userInfo,
+    //     hasUserInfo: true
+    //   })
+    // } else if (this.data.canIUse){
+    //   // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
+    //   // 所以此处加入 callback 以防止这种情况
+    //   app.userInfoReadyCallback = res => {
+    //     this.setData({
+    //       userInfo: res.userInfo,
+    //       hasUserInfo: true
+    //     })
+    //   }
+    // } else {
+    //   // 在没有 open-type=getUserInfo 版本的兼容处理
+    //   wx.getUserInfo({
+    //     success: res => {
+    //       app.globalData.userInfo = res.userInfo
+    //       this.setData({
+    //         userInfo: res.userInfo,
+    //         hasUserInfo: true
+    //       })
+    //     }
+    //   })
+    // }
+  },
+
+  /***
+   * 获取城市酒店列表
+   * params 定位参数
+   */
+  getHotelList(params) {
+    console.log('log', '酒店列表', params);
     // 获取城市
     // 获取微信信息
     Util.request({
       url: serverPath + '/hotel/listHotel',
       method: "GET",
-      data: {
-        cityName: '深圳'
-      },
+      data: params,
       header: {
         'content-type': 'application/json' // 默认值
       },
       success: (res) => {
         if (res.data.errorCode == 0) {
           if (!!res.data.data) {
-            if (res.data.data.length > 0 ) {
+            if (res.data.data.length > 0) {
               const markers = res.data.data.map(item => {
                 const ll = item.map.split(',');
                 let lat = 0;
@@ -344,50 +430,94 @@ Page({
               }
               if (markers.length > 0) {
                 data['position'] = markers[0].street;
+                data['latitude'] = markers[0].latitude;
+                data['longitude'] = markers[0].longitude;
               }
               this.setData(data)
 
-            } 
+            } else {
+              wx.showModal({
+                title: '该城市还没有引入相关酒店',
+                content: '是否查找其他周边城市',
+                success(res) {
+                  wx.navigateTo({
+                    url: '/pages/city/city',
+                  })
+                  if (res.confirm) {
+                    console.log('用户点击确定');
+                  } else if (res.cancel) {
+                    console.log('用户点击取消');
+                  }
+                }
+              })
+            }
           } else {
             // wx.showToast({
             //   title: '选择区域没有酒店',
             // })
           }
+        } else {
+          wx.showModal({
+            title: '该城市还没有引入相关酒店',
+            content: '是否查找其他周边城市',
+            success(res) {
+              if (res.confirm) {
+                console.log('用户点击确定')
+              } else if (res.cancel) {
+                console.log('用户点击取消')
+              }
+            }
+          })
         }
       },
       complete() {
         wx.hideLoading();
       }
     })
-
-    // this.mapCtx.moveToLocation();
-    if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      })
-    } else if (this.data.canIUse){
-      // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-      // 所以此处加入 callback 以防止这种情况
-      app.userInfoReadyCallback = res => {
-        this.setData({
-          userInfo: res.userInfo,
-          hasUserInfo: true
-        })
-      }
-    } else {
-      // 在没有 open-type=getUserInfo 版本的兼容处理
-      wx.getUserInfo({
-        success: res => {
-          app.globalData.userInfo = res.userInfo
-          this.setData({
-            userInfo: res.userInfo,
-            hasUserInfo: true
-          })
-        }
-      })
-    }
   },
+  /***
+   * 设置经纬度
+   * flat 是否不加载酒店列表
+   */
+  getLocation(flat) {
+    console.log('log', '定位', flat);
+    Util.request({
+      url: 'https://sso.yoju360.net/api/location',
+      method: "GET",
+      data: {
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.code == 200) {
+          // res.data.result.lng = 114.022637;
+          // res.data.result.lat = 22.547901;
+          this.setData({
+            latitude: res.data.result.lat,
+            longitude: res.data.result.lng,
+            cityName: res.data.result.cityData.city_name
+          });
+          if (!flat) {
+            // 加载酒店列表
+            this.getHotelList({
+              longi: res.data.result.lng,
+              lati: res.data.result.lat,
+              distance: 10000,
+              // longi: 114.022637,
+              // lati: 22.547901,
+              // distance: 10000,
+              // cityName: '深圳'  经度:114.022637 纬度: 22.547901
+              // cityName: '广州'
+            })
+          }
+        }
+      },
+      complete() {
+      }
+    })
+  },
+
   hideMode() {
     this.setData({
       isShowModel: false
@@ -444,6 +574,8 @@ Page({
                     userInfo: res.data.data,
                     hasUserInfo: true
                   })
+                  // 是否在抢单
+                  this.myOrder();
                 }
               },
               complete() {
@@ -468,5 +600,98 @@ Page({
       desc: '快速定位查找你所需要的酒店',
       path: '/pages/index/index'
     }
+  },
+
+  onShow() {
+    console.log('onShow');
+    const { cityName, isGetOrder } = this.data;
+    // 原来状态是抢单
+    if (isGetOrder) {
+      if (!app.globalData.userInfo) {
+        this.setData({
+          isGetOrder: false
+        });
+        // 登录
+        wx.login({
+          success: res => {
+            // 发送 res.code 到后台换取 openId, sessionKey, unionId
+            wx.showLoading({
+              title: '正在登陆...',
+            });
+            Util.request({
+              url: serverPath + '/user/wechatLogin',
+              method: "GET",
+              data: {
+                code: res.code
+              },
+              header: {
+                'content-type': 'application/json' // 默认值
+              },
+              success: (res) => {
+                wx.hideLoading();
+                if (res.data.errorCode === 0) {
+                  app.globalData.openId = res.data.data;
+                  wx.showLoading({
+                    title: '正在获取登陆信息...',
+                  });
+                  // 获取微信信息
+                  Util.request({
+                    url: serverPath + '/user/get',
+                    method: "GET",
+                    data: {
+                      openId: res.data.data
+                    },
+                    header: {
+                      'content-type': 'application/json' // 默认值
+                    },
+                    success: (res) => {
+                      if (res.data.errorCode == -1) {
+                        // 没有找到用户信息
+                        this.setData({
+                          isShowModel: true
+                        });
+                      } else {
+                        // 获取用户信息
+                        app.globalData.userInfo = res.data.data
+                        this.setData({
+                          userInfo: res.data.data,
+                          hasUserInfo: true
+                        });
+                        // 是否在抢单
+                        this.myOrder();
+                      }
+                    },
+                    complete() {
+                      wx.hideLoading();
+                    }
+                  })
+                } else {
+                  // todo 登陆失败
+                }
+              },
+              fail() {
+                wx.hideLoading();
+              }
+            })
+          }
+        });
+      } else {
+        // 是否在抢单
+        console.log('登陆时已有用户信息')
+        this.myOrder();
+      }
+      return;
+    };
+    // 加载酒店列表
+    this.getHotelList({
+      // longi: res.data.result.lng,
+      // lati: res.data.result.lat,
+      // distance: 10000,
+      // longi: 114.022637,
+      // lati: 22.547901,
+      // distance: 10000,
+      // cityName: '深圳'  经度:114.022637 纬度: 22.547901
+      cityName: cityName
+    })
   }
 })

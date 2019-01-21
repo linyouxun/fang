@@ -1,2 +1,28 @@
 <!--pages/city/city.wxml-->
-<text>pages/city/city.wxml</text>
+<!--搜搜  -->
+<view>
+  <input class='search-item' bindinput='inputChange' placeholder='搜索城市'></input>
+</view>
+<!--定位  -->
+  <view class='city-list'>
+    <view class='city-item' data-city="{{cityName}}" bindtap='selectCity'>
+      定位城市: {{cityName}}
+    </view>
+  </view>
+<view>
+</view>
+<!--城市列表  -->
+<view class='city-list'>
+  <view class='city-item' wx:for="{{cityList}}" data-city="{{item.name}}" bindtap='selectCity' wx:key="{{index}}">
+    {{item.name}} ({{item.pinyin}})
+  </view>
+</view>
+
+<!--右边字母  -->
+
+<view class='f'>
+  <view class='code-list'>
+    <view class='code-item' wx:for="{{code}}" wx:key="{{index}}">{{item}}</view>
+  </view>
+</view>
+

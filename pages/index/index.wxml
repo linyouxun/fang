@@ -12,7 +12,17 @@
       </navigator>
     </view>
   </view>
-  <view class='center'>城市</view>
+  <view class='center'>
+    <view wx:if="{{isGetOrder}}" class='get-order'>
+      抢单中
+      <image src="/images/loading.png" class='loading-img'></image>
+    </view>
+    <view wx:else>
+      <navigator url='/pages/city/city'>
+        {{cityName}}
+      </navigator>
+    </view>
+  </view>
 </view>
 
 <map
@@ -37,8 +47,14 @@
     <view class='b-center'>
       <view class='flex'>
         <view class='flex-1'>价格</view>
-        <view class='flex-1'>
+        <!-- <view class='flex-1'>
+          <input placeholder='请出价' data-name="money" bindinput='bindChange' value='{{money}}'/> -->
+        <view class='flex-1' wx:if="{{!isGetOrder}}">
+          <!-- <input placeholder='请出价' data-name="money" bindinput='bindChange' type='number' value='{{money}}'/> -->
           <input placeholder='请出价' data-name="money" bindinput='bindChange' value='{{money}}'/>
+        </view>
+        <view class='flex-1' wx:else>
+          {{orderObj.money}}
         </view>
       </view>
       <view class='flex'>
@@ -49,9 +65,11 @@
             value="{{startDate}}"
             data-name="startDate"
             bindchange="bindChange"
+            wx:if="{{!isGetOrder}}"
           >
             <view class="picker">{{startDate}}</view>
           </picker>
+          <text wx:else>{{orderObj.startDate}}</text>
         </view>
       </view>
       <view class='flex'>
@@ -62,17 +80,20 @@
             value="{{endDate}}"
             data-name="endDate"
             bindchange="bindChange"
+            wx:if="{{!isGetOrder}}"
           >
             <view class="picker">{{endDate}}</view>
           </picker>
+          <text wx:else>{{orderObj.endDate}}</text>
         </view>
       </view>
       <view class='flex'>
         <view class='flex-1'>酒店位置</view>
         <view class='flex-1'>
-          <navigator open-type="navigate" url="/pages/city/city">
+          <navigator wx:if="{{!isGetOrder}}" open-type="navigate" url="/pages/city/city">
             {{position || '请选择位置'}}
           </navigator>
+          <text wx:else>{{orderObj.position}}</text>
         </view>
       </view>
       <!-- <view class='flex'>
@@ -153,18 +174,29 @@
       更多要求→
     </view>
   </view>
-  <view class='bottom2' bindtap='sendForm'>发布</view>
+  <view class='bottom2' bindtap='sendForm' wx:if="{{!isGetOrder}}">发布</view>
+  <view class='bottom2' bindtap='addPrice' wx:else>
+    <picker
+      mode="selector"
+      bindchange="bindPrice"
+      data-name="price"
+      range='{{priceList}}'
+      range-key="name"
+    >
+      加价
+    </picker>
+  </view>
 <!-- </map> -->
 
 
-<view class='model {{isShowModel ? "" : "hide"}}'>
-  <view class='m-content'>
-    <view class='m-title'> 喵个房获取授权 </view>
-    <view class='m-tip'>
+<cover-view class='model' wx:if="{{isShowModel}}">
+  <cover-view class='m-content'>
+    <cover-view class='m-title'> 喵个房获取授权 </cover-view>
+    <cover-view class='m-tip'>
       · 获取你的公开信息（昵称、头像、地区及性别）
-    </view>
-    <view>
+    </cover-view>
+    <cover-view>
     <button class='m-button' open-type="getUserInfo" bindgetuserinfo="getUserInfo" bindtap='hideMode'> 允许 </button>
-    </view>
-  </view>
-</view>
+    </cover-view>
+  </cover-view>
+</cover-view>

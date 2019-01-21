@@ -113,9 +113,13 @@ const orderStatus = {
   '3': '取消'
 }
 
+const priceList = [{ id: '1', price: 10, name: '10元' }, { id: '2', price: 20, name: '20元' }, { id: '3', price: 30, name: '30元' }, { id: '4', price: 40, name: '40元' }, { id: '5', price: 50, name: '50元' }, { id: '6', price: 60, name: '60元' }];
+
 // const serverPath = 'http://127.0.0.1';
 // const serverPath = 'http://47.106.174.88:8080/api/app/mock/17';
-const serverPath = 'http://118.24.37.163:5605';
+// const serverPath = 'http://118.24.37.163:5605';
+const serverPath = 'https://saas.jia360.com/hapi';
+
 module.exports = {
   stars: stars,
   bed: bed,
@@ -126,4 +130,5 @@ module.exports = {
   breakfast,
   addbed,
   facilities,
+  priceList
 }

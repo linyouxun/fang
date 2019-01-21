@@ -66,7 +66,7 @@ Page({
             try {
               const d = JSON.parse(item.info);
               item['img'] = app.globalData.userInfo.avatarUrl;
-              item['name'] = item.position;
+              item['name'] = d.position;
               item['star'] = stars[d.starIndex].name;
               item['startTime'] = d.startDate.substr(5, 10);
               item['endTime'] = d.endDate.substr(5, 10);
@@ -116,7 +116,7 @@ Page({
             try {
               const d = JSON.parse(item.info);
               item['img'] = app.globalData.userInfo.avatarUrl;
-              item['name'] = item.position;
+              item['name'] = d.position;
               item['star'] = stars[d.starIndex].name;
               item['startTime'] = d.startDate.substr(5, 10);
               item['endTime'] = d.endDate.substr(5, 10);
