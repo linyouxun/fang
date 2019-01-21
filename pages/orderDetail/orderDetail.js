@@ -45,14 +45,44 @@ Page({
       }
     })
   },
+  clickHotel(e) {
+    const { item } = e.currentTarget.dataset;
+    console.log(item);
+    wx.showActionSheet({
+      itemList: [
+        `电话咨询(${item.telephone})`,
+        // `取消下单(${item.hotelName})`, 
+      ],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          wx.makePhoneCall({
+            phoneNumber: item.telephone // 仅为示例，并非真实的电话号码
+          })
+        }
+        // if (res.tapIndex === 1) {
+        //   this.updateOrder(item, companyList[index].hotelId)
+        // }
+      },
+      fail(res) {
+        console.log(res.errMsg)
+      }
+    })
+  },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
     // options = { "info": "{\"money\":\"10\",\"startDate\":\"2019-01-11\",\"endDate\":\"2019-01-11\",\"starIndex\":0,\"bedIndex\":0,\"timeIndex\":0,\"houseIndex\":0,\"position\":\"南湖路3012号\"}", id: "2", "userId": "3", "state": "1" }
+    console.log(options);
     let item = {};
     try {
+      const hotelEntity = JSON.parse(options.hotelEntityStr);
+      if (!!hotelEntity.hotelId) {
+        item['hotelEntity'] = [hotelEntity];
+      } else {
+        item['hotelEntity'] = [];
+      }
       const d = JSON.parse(options.info);
       item['star'] = stars[d.starIndex].name;
       item['startTime'] = d.startDate;

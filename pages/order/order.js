@@ -75,6 +75,7 @@ Page({
               item['house'] = bed[d.bedIndex].name;
               item['statusName'] = orderStatus[item.state];
               item['money'] = d.money;
+              item['hotelEntityStr'] = JSON.stringify(item.hotelEntity || {})
             } catch(e) {
               
             }
@@ -125,6 +126,7 @@ Page({
               item['house'] = bed[d.bedIndex].name;
               item['statusName'] = orderStatus[item.state];
               item['money'] = d.money;
+              item['hotelEntityStr'] = JSON.stringify(item.hotelEntity || {})
             } catch (e) {
 
             }

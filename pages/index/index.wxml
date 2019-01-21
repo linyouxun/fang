@@ -14,8 +14,10 @@
   </view>
   <view class='center'>
     <view wx:if="{{isGetOrder}}" class='get-order'>
-      抢单中
-      <image src="/images/loading.png" class='loading-img'></image>
+      <navigator url='/pages/orderDetail2/orderDetail?orderId={{orderObj.id}}&userId={{userInfo.id}}'>
+        抢单中
+        <image src="/images/loading.png" class='loading-img'></image>
+      </navigator>
     </view>
     <view wx:else>
       <navigator url='/pages/city/city'>

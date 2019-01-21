@@ -27,10 +27,9 @@
     </view>
   </view>
 </view>
-
-<view class='list' wx:if="{{item.hotelEntity.length > 0}}">
-  <view class='hotel-head'>意向酒店</view>
-  <view wx:for="{{item.hotelEntity}}" wx:key="{{index}}" bindtap='clickHotel' data-item='{{item}}'>
+<view class='list' wx:if="companyList.length > 0">
+  <view class='hotel-head'>意向酒店列表{{companyList.length > 0 ? '' : '(空)'}}</view>
+  <view wx:for="{{companyList}}" wx:key="{{index}}" bindtap='clickHotel' data-index='{{index}}'>
     <view class='item'>
       <view class='item-name'>酒店名称</view>
       <view class='item-price'>{{item.hotelName}} ({{item.telephone}})</view>

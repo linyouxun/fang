@@ -1,6 +1,7 @@
 {
   "pages":[
     "pages/index/index",
+    "pages/orderDetail2/orderDetail",
     "pages/city/city",
     "pages/order/order",
     "pages/moreDetail/moreDetail",
