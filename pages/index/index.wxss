@@ -5,6 +5,9 @@
   box-sizing: border-box;
   position: relative;
 }
+.red {
+  background-color: red;
+}
 #map {
   width: 100%;
 }

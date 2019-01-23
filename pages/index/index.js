@@ -20,6 +20,7 @@ Page({
     longitude:114.127348,
     cityName: '深圳',
     isGetOrder: true, // 是否在抢单
+    companyList: [],
     // 标注信息
     markers: [{
       callout: {
@@ -77,6 +78,7 @@ Page({
     isShowModel: false,
     orderObj: {}
   },
+  clearTime: null,
   bindPrice(e) {
     const { priceList, orderObj } = this.data;
     const price = priceList[e.detail.value];
@@ -134,7 +136,7 @@ Page({
     })
   },
   sendForm() {
-    let { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position, userInfo, latitude, longitude } = this.data;
+    let { money, startDate, endDate, starIndex, bedIndex, timeIndex, houseIndex, position, userInfo, latitude, longitude, markers } = this.data;
     let breakfast = [];
     let addbed = [];
     let facilities = [];
@@ -184,7 +186,7 @@ Page({
       data: {
         info: JSON.stringify(params),
         userId: userInfo.id,
-        position: [longitude, latitude].join(','),
+        position: [markers[0].longitude, markers[0].latitude].join(','),
       },
       header: {
         'content-type': 'application/json' // 默认值
@@ -196,6 +198,7 @@ Page({
             more: false,
             orderObj: Object.assign(params, {id: res.data.data})
           })
+          this.loadCompany();
           return wx.showToast({
             title: '发布成功',
             icon: 'none'
@@ -234,6 +237,8 @@ Page({
                 position: info.position
               })
             })
+            // 查找酒店
+            this.loadCompany();
             this.getLocation(true);
           } else {
             this.setData({
@@ -304,7 +309,9 @@ Page({
         markers[0].longitude = res.longitude;
         markers[0].latitude = res.latitude;
         this.setData({
-          markers
+          markers,
+          // longitude: res.longitude,
+          // latitude: res.latitude,
         })
       }
     })
@@ -440,10 +447,10 @@ Page({
                 title: '该城市还没有引入相关酒店',
                 content: '是否查找其他周边城市',
                 success(res) {
-                  wx.navigateTo({
-                    url: '/pages/city/city',
-                  })
                   if (res.confirm) {
+                    wx.navigateTo({
+                      url: '/pages/city/city',
+                    })
                     console.log('用户点击确定');
                   } else if (res.cancel) {
                     console.log('用户点击取消');
@@ -517,6 +524,51 @@ Page({
       }
     })
   },
+  cancelOrder() {
+    const { orderObj } = this.data;
+    this.updateOrder(orderObj);
+  },
+  updateOrder(orderObj) {
+    console.log(orderObj);
+    wx.showLoading({
+      title: '订单正在取消...',
+    });
+    orderObj['cancelTime'] = new Date().Format('yyyy-MM-dd hh:mm:ss');
+    Util.request({
+      url: serverPath + '/order/update',
+      method: "GET",
+      data: {
+        orderId: orderObj.id,
+        info: JSON.stringify(orderObj),
+        state: 3
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          if (!!this.clearTime) {
+            clearInterval(this.clearTime)
+            this.clearTime = null;
+          }
+          this.resetData();
+          this.setData({
+            isGetOrder: false,
+          })
+          wx.showModal({
+            title: '您已取消成功',
+            content: '',
+            success: (res) => {
+              console.log('log');
+            }
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
+  },
 
   hideMode() {
     this.setData({
@@ -536,10 +588,10 @@ Page({
         method: "GET",
         data: {
           openId: app.globalData.openId,
-          // userInfo: JSON.stringify(Object.assign(e.detail.userInfo, {
-          //   "nickName": "眼睛"
-          // }))
-          userInfo: JSON.stringify(e.detail.userInfo)
+          userInfo: JSON.stringify(Object.assign(e.detail.userInfo, {
+            "nickName": "眼睛"
+          }))
+          // userInfo: JSON.stringify(e.detail.userInfo)
         },
         header: {
           'content-type': 'application/json' // 默认值
@@ -601,9 +653,51 @@ Page({
       path: '/pages/index/index'
     }
   },
+  loadCompany() {
+    this.stopLoadCompany();
+    const { isGetOrder, orderObj } = this.data;
+    if (isGetOrder && !!orderObj.id) {
+      this.companyOrder(orderObj.id);
+    }
+    this.clearTime = setInterval(() => {
+      // 公司列表
+      const { isGetOrder, orderObj} = this.data;
+      if (isGetOrder && !!orderObj.id) {
+        this.companyOrder(orderObj.id);
+      }
+    }, 2000)
+  },
+  stopLoadCompany() {
+    if (!!this.clearTime) {
+      clearInterval(this.clearTime)
+      this.clearTime = null;
+    }
+  },
+
+  companyOrder(orderId) {
+    Util.request({
+      url: serverPath + '/user/myOrderHotels',
+      method: "GET",
+      data: {
+        orderId,
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          this.setData({
+            companyList: res.data.data || []
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
+  },
 
   onShow() {
-    console.log('onShow');
     const { cityName, isGetOrder } = this.data;
     // 原来状态是抢单
     if (isGetOrder) {
@@ -693,5 +787,24 @@ Page({
       // cityName: '深圳'  经度:114.022637 纬度: 22.547901
       cityName: cityName
     })
-  }
+  },
+    /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide: function () {
+    if (!!this.clearTime) {
+      clearInterval(this.clearTime)
+      this.clearTime = null;
+    }
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload: function () {
+    if (!!this.clearTime) {
+      clearInterval(this.clearTime)
+      this.clearTime = null;
+    }
+  },
 })

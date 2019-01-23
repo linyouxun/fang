@@ -15,7 +15,7 @@
   <view class='center'>
     <view wx:if="{{isGetOrder}}" class='get-order'>
       <navigator url='/pages/orderDetail2/orderDetail?orderId={{orderObj.id}}&userId={{userInfo.id}}'>
-        抢单中
+        {{companyList.length > 0 ? '已有' + companyList.length + '接单' : '抢单中'}}
         <image src="/images/loading.png" class='loading-img'></image>
       </navigator>
     </view>
@@ -177,16 +177,19 @@
     </view>
   </view>
   <view class='bottom2' bindtap='sendForm' wx:if="{{!isGetOrder}}">发布</view>
-  <view class='bottom2' bindtap='addPrice' wx:else>
-    <picker
-      mode="selector"
-      bindchange="bindPrice"
-      data-name="price"
-      range='{{priceList}}'
-      range-key="name"
-    >
-      加价
-    </picker>
+  <view class='bottom2 flex' wx:else>
+    <view class='flex-1 red' bindtap='cancelOrder'>取消</view>
+    <view class='flex-1'>
+      <picker
+        mode="selector"
+        bindchange="bindPrice"
+        data-name="price"
+        range='{{priceList}}'
+        range-key="name"
+      >
+        加价
+      </picker>
+    </view>
   </view>
 <!-- </map> -->
 

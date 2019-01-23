@@ -1,5 +1,6 @@
 // pages/orderDetail/orderDetail.js
 const { stars, bed, time, house, serverPath, orderStatus } = require('../../utils/const.js');
+const app = getApp();
 const Util = require('../../utils/util.js');
 Page({
 
@@ -7,7 +8,96 @@ Page({
    * 页面的初始数据
    */
   data: {
-    item: {}
+    item: {},
+    companyList: [],
+  },
+  clearTime: null,
+  updateOrder(orderObj, hotel) {
+    Util.request({
+      url: serverPath + '/order/pay',
+      method: "GET",
+      data: {
+        // ip: '',
+        openId: app.globalData.openId
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          console.log(res);
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
+
+    
+
+    return;
+    wx.showLoading({
+      title: '订单正在生成...',
+    });
+    Util.request({
+      url: serverPath + '/order/update',
+      method: "GET",
+      data: {
+        orderId: orderObj.id,
+        info: orderObj.info,
+        state: 2,
+        hotelId: hotel.hotelId,
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          if (!!this.clearTime) {
+            clearInterval(this.clearTime)
+            this.clearTime = null;
+          }
+          wx.showModal({
+            title: '您已预订成功',
+            content: '',
+            success: (res) => {
+              const { item } = this.data;
+              item.state = '2';
+              item['statusName'] = orderStatus['2'];
+              orderObj['hotelEntity'] = [hotel];
+              this.setData({
+                companyList: [],
+                item: orderObj
+              })
+            }
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
+  },
+  clickHotel2(e) {
+    const { companyList, item } = this.data;
+    const { index } = e.currentTarget.dataset;
+    wx.showActionSheet({
+      itemList: [`直接下单(${companyList[index].hotelName})`, `电话咨询(${companyList[index].telephone})`],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 确定
+          this.updateOrder(item, companyList[index])
+        }
+        if (res.tapIndex === 1) {
+          wx.makePhoneCall({
+            phoneNumber: companyList[index].telephone // 仅为示例，并非真实的电话号码
+          })
+        }
+      },
+      fail(res) {
+        console.log(res.errMsg)
+      }
+    })
   },
   cancelOrder() {
     const { item } = this.data;
@@ -111,6 +201,36 @@ Page({
     this.setData({
       item
     })
+    if (item['state'] == '1') {
+      this.companyOrder(options.id);
+      this.clearTime = setInterval(() => {
+        // 公司列表
+        this.companyOrder(options.id);
+      }, 2000)
+    }
+  },
+
+  companyOrder(orderId) {
+    Util.request({
+      url: serverPath + '/user/myOrderHotels',
+      method: "GET",
+      data: {
+        orderId,
+      },
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success: (res) => {
+        if (res.data.errorCode == 0) {
+          this.setData({
+            companyList: res.data.data || []
+          })
+        }
+      },
+      complete() {
+        wx.hideLoading();
+      }
+    })
   },
 
   /**
@@ -131,14 +251,20 @@ Page({
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-  
+    if (!!this.clearTime) {
+      clearInterval(this.clearTime)
+      this.clearTime = null;
+    }
   },
 
   /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-  
+    if (!!this.clearTime) {
+      clearInterval(this.clearTime)
+      this.clearTime = null;
+    }
   },
 
   /**
