@@ -100,7 +100,6 @@ Page({
   },
 
   updateOrder(orderObj, hotelId) {
-    console.log(orderObj, hotelId);
     Util.request({
       url: serverPath + '/order/pay',
       method: "GET",
@@ -128,11 +127,47 @@ Page({
           } else {
             wx.requestPayment({
               ...d,
-              'success': function (res) {
-                wx.showModal({
-                  title: '恭喜您支付成功',
-                  content: '房间已经给你预留好了'
+              'success': (res) => {
+                wx.showLoading({
+                  title: '订单正在生成...',
                 });
+                Util.request({
+                  url: serverPath + '/order/update',
+                  method: "GET",
+                  data: {
+                    orderId: orderObj.id,
+                    info: orderObj.info,
+                    state: 2,
+                    hotelId,
+                  },
+                  header: {
+                    'content-type': 'application/json' // 默认值
+                  },
+                  success: (res) => {
+                    if (res.data.errorCode == 0) {
+                      // wx.showToast({
+                      //   title: '您已预订成功',
+                      //   icon: 'none'
+                      // });
+                      if (!!this.clearTime) {
+                        clearInterval(this.clearTime)
+                        this.clearTime = null;
+                      }
+                      wx.showModal({
+                        title: '您已预订成功',
+                        content: '',
+                        success(res) {
+                          wx.redirectTo({
+                            url: '/pages/order/order',
+                          })
+                        }
+                      })
+                    }
+                  },
+                  complete() {
+                    wx.hideLoading();
+                  }
+                })
               },
               'fail': function (res) {
                 wx.showToast({
@@ -143,47 +178,6 @@ Page({
               }
             });
           }
-        }
-      },
-      complete() {
-        wx.hideLoading();
-      }
-    })
-    return ;
-    wx.showLoading({
-      title: '订单正在生成...',
-    });
-    Util.request({
-      url: serverPath + '/order/update',
-      method: "GET",
-      data: {
-        orderId: orderObj.id,
-        info: orderObj.info,
-        state: 2,
-        hotelId,
-      },
-      header: {
-        'content-type': 'application/json' // 默认值
-      },
-      success: (res) => {
-        if (res.data.errorCode == 0) {
-          // wx.showToast({
-          //   title: '您已预订成功',
-          //   icon: 'none'
-          // });
-          if (!!this.clearTime) {
-            clearInterval(this.clearTime)
-            this.clearTime = null;
-          }
-          wx.showModal({
-            title: '您已预订成功',
-            content: '',
-            success(res) {
-              wx.redirectTo({
-                url: '/pages/order/order',
-              })
-            }
-          })
         }
       },
       complete() {

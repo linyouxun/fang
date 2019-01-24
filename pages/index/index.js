@@ -56,14 +56,14 @@ Page({
     //   name: '汉庭酒店(广州天河店)',
     //   iconPath: '/images/hotel.png'
     }],
-    // circles: {
-    //   latitude: 23.10346770738263,
-    //   longitude: 113.33679378845213,
-    //   color: '#0f0',
-    //   fillColor: '#f0f',
-    //   radius: 10,
-    //   strokeWidth: 1
-    // }
+    circles: [{
+      latitude: 22.547951,
+      longitude: 114.127348,
+      color: '#2e77e500',
+      fillColor: '#2e77e555',
+      radius: 1000,
+      strokeWidth: 1
+    }],
     more: false,
     // 统计信息
     money: 0,
@@ -78,15 +78,52 @@ Page({
     isShowModel: false,
     orderObj: {}
   },
+  pos: {
+  },
   clearTime: null,
+  locationPos() {
+    if (!!this.pos.longitude) {
+      const { circles, markers } = this.data;
+      markers[0].longitude = this.pos.longitude;
+      markers[0].latitude = this.pos.latitude;
+      circles[0].longitude = this.pos.longitude;
+      circles[0].latitude = this.pos.latitude;
+      this.setData({
+        markers,
+        circles
+      })
+      this.mapCtx.moveToLocation();
+    }
+    wx.getLocation({
+      type: 'gcj02', // 返回可以用于wx.openLocation的经纬度
+      success: (res) => {
+        if (res.errMsg == 'getLocation:ok') {
+          this.pos = {
+            latitude: res.latitude,
+            longitude: res.longitude,
+          }
+          const { circles, markers } = this.data;
+          markers[0].longitude = this.pos.longitude;
+          markers[0].latitude = this.pos.latitude;
+          circles[0].longitude = this.pos.longitude;
+          circles[0].latitude = this.pos.latitude;
+          this.setData({
+            markers,
+            circles
+          })
+          this.mapCtx.moveToLocation()
+        }
+      }
+    })
+  },
   bindPrice(e) {
     const { priceList, orderObj } = this.data;
     const price = priceList[e.detail.value];
     delete orderObj['info'];
     orderObj['money'] = +orderObj['money'] + price.price;
-    this.updateOrder(orderObj)
+    this.updateOrder2(orderObj)
   },
-  updateOrder(orderObj) {
+  updateOrder2(orderObj) {
     wx.showLoading({
       title: '订单正在加价...',
     });
@@ -305,11 +342,14 @@ Page({
   regionchange(e) {
     this.mapCtx.getCenterLocation({
       success:(res) => {
-        const markers = this.data.markers;
+        const { circles, markers } = this.data;
         markers[0].longitude = res.longitude;
         markers[0].latitude = res.latitude;
+        circles[0].longitude = res.longitude;
+        circles[0].latitude = res.latitude;
         this.setData({
           markers,
+          circles
           // longitude: res.longitude,
           // latitude: res.latitude,
         })
@@ -432,8 +472,14 @@ Page({
                 name: '选择中心点',
                 iconPath: '/images/location.png'
               }
+              const { circles } = this.data;
+
+              circles[0].latitude = markers[0].latitude;
+              circles[0].longitude = markers[0].longitude;
+
               let data = {
-                markers: [pos, ...markers]
+                markers: [pos, ...markers],
+                circles
               }
               if (markers.length > 0) {
                 data['position'] = markers[0].street;

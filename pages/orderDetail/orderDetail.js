@@ -17,7 +17,7 @@ Page({
       url: serverPath + '/order/pay',
       method: "GET",
       data: {
-        // ip: '',
+        ip: '120.77.235.71',
         openId: app.globalData.openId
       },
       header: {
@@ -25,52 +25,73 @@ Page({
       },
       success: (res) => {
         if (res.data.errorCode == 0) {
-          console.log(res);
-        }
-      },
-      complete() {
-        wx.hideLoading();
-      }
-    })
-
-    
-
-    return;
-    wx.showLoading({
-      title: '订单正在生成...',
-    });
-    Util.request({
-      url: serverPath + '/order/update',
-      method: "GET",
-      data: {
-        orderId: orderObj.id,
-        info: orderObj.info,
-        state: 2,
-        hotelId: hotel.hotelId,
-      },
-      header: {
-        'content-type': 'application/json' // 默认值
-      },
-      success: (res) => {
-        if (res.data.errorCode == 0) {
-          if (!!this.clearTime) {
-            clearInterval(this.clearTime)
-            this.clearTime = null;
+          const d = {
+            'timeStamp': res.data.data.timeStamp + '',
+            'nonceStr': res.data.data.nonceStr,
+            'package': `prepay_id=${res.data.data.prepay_id}`,
+            'signType': res.data.data.signType,
+            'paySign': res.data.data.paySign
           }
-          wx.showModal({
-            title: '您已预订成功',
-            content: '',
-            success: (res) => {
-              const { item } = this.data;
-              item.state = '2';
-              item['statusName'] = orderStatus['2'];
-              orderObj['hotelEntity'] = [hotel];
-              this.setData({
-                companyList: [],
-                item: orderObj
-              })
-            }
-          })
+          if (!res.data.data.prepay_id) {
+            wx.showModal({
+              title: '下单出错了',
+              content: '请重新确认'
+            });
+          } else {
+            wx.requestPayment({
+              ...d,
+              'success': (res) => {
+                wx.showLoading({
+                  title: '订单正在生成...',
+                });
+                Util.request({
+                  url: serverPath + '/order/update',
+                  method: "GET",
+                  data: {
+                    orderId: orderObj.id,
+                    info: orderObj.info,
+                    state: 2,
+                    hotelId: hotel.hotelId,
+                  },
+                  header: {
+                    'content-type': 'application/json' // 默认值
+                  },
+                  success: (res) => {
+                    if (res.data.errorCode == 0) {
+                      if (!!this.clearTime) {
+                        clearInterval(this.clearTime)
+                        this.clearTime = null;
+                      }
+                      wx.showModal({
+                        title: '您已预订成功',
+                        content: '',
+                        success: (res) => {
+                          const { item } = this.data;
+                          item.state = '2';
+                          item['statusName'] = orderStatus['2'];
+                          orderObj['hotelEntity'] = [hotel];
+                          this.setData({
+                            companyList: [],
+                            item: orderObj
+                          })
+                        }
+                      })
+                    }
+                  },
+                  complete() {
+                    wx.hideLoading();
+                  }
+                })
+              },
+              'fail': function (res) {
+                wx.showToast({
+                  title: '您已取消支付',
+                  icon: 'none',
+                  duration: 2000
+                });
+              }
+            });
+          }
         }
       },
       complete() {

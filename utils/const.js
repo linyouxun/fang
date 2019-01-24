@@ -15,6 +15,44 @@ const addbed = [{
   name: '加床'
 }]
 
+const circleD = [{
+  id: '0',
+  name: '100米',
+  distance: 100,
+}, {
+  id: '1',
+  name: '250米',
+  distance: 250,
+},{
+  id: '2',
+  name: '500米',
+  distance: 500,
+}, {
+  id: '3',
+  name: '800米',
+  distance: 800,
+}, {
+  id: '4',
+  name: '1千米',
+  distance: 1000,
+}, {
+  id: '5',
+  name: '2千米',
+  distance: 2000,
+}, {
+  id: '6',
+  name: '2.5千米',
+  distance: 2500,
+}, {
+  id: '7',
+  name: '5千米',
+  distance: 5000,
+}, {
+  id: '8',
+  name: '1万米',
+  distance: 10000,
+}]
+
 const facilities = [{
   id: '0',
   name: '洗衣服务'

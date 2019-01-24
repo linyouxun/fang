@@ -40,8 +40,11 @@
   bindtap='bindtap'
   bindregionchange="regionchange"
   show-location="{{true}}"
-  enable-zoom="{{false}}"
-></map>
+  circles="{{circles}}"
+>
+  <!-- enable-zoom="{{false}}" -->
+  <cover-image bindtap='locationPos' src='/images/point.png' class='point'></cover-image>
+</map>
   <view class='bottom' style='bottom: -{{(!more ? 4 : 0) * 80 }}rpx;'>
     <view class='b-header' bindtap="moreInfo">
       <image class='moreInfo' style='{{!more ? "" : "transform: rotate(0deg);"}}' src='/images/down.png'></image>

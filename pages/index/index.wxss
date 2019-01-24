@@ -10,6 +10,28 @@
 }
 #map {
   width: 100%;
+  position: relative;
+}
+.point {
+  position: absolute;
+  bottom: 0rpx;
+  right: 0rpx;
+  width: 50rpx;
+  height: 50rpx;
+  padding: 20rpx;
+  animation: scale 2s infinite;
+}
+
+@keyframes scale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(.9);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 .get-order {
   font-size: 36rpx;
